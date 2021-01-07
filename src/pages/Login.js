@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getEmail } from '../actions';
 
@@ -36,35 +37,39 @@ class Login extends React.Component {
 
   render() {
     const { emailIsValid, passwordIsValid, email } = this.state;
-    const { getEmail, history } = this.props;
+    const { getEmailProps, history } = this.props;
 
     return (
       <div>
-        <label htmlFor="email-input">Email</label>
-        <input
-          type="text"
-          id="email-input"
-          data-testid="email-input"
-          value={ email }
-          onChange={ ({ target: { value } }) => {
-            this.setState({ email: value });
-            this.emailValidation(value);
-          } }
-        />
+        <label htmlFor="email-input">
+          Email
+          <input
+            type="text"
+            id="email-input"
+            data-testid="email-input"
+            value={ email }
+            onChange={ ({ target: { value } }) => {
+              this.setState({ email: value });
+              this.emailValidation(value);
+            } }
+          />
+        </label>
 
-        <label htmlFor="password-input">Senha</label>
-        <input
-          type="text"
-          id="password-input"
-          data-testid="password-input"
-          onChange={ ({ target: { value } }) => this.passwordValidation(value) }
-        />
+        <label htmlFor="password-input">
+          Senha
+          <input
+            type="text"
+            id="password-input"
+            data-testid="password-input"
+            onChange={ ({ target: { value } }) => this.passwordValidation(value) }
+          />
+        </label>
 
         <button
           disabled={ !passwordIsValid || !emailIsValid }
           type="button"
           onClick={ () => {
-            getEmail(email);
+            getEmailProps(email);
             history.push('carteira');
           } }
         >
@@ -77,7 +82,14 @@ class Login extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  getEmail: (email) => dispatch(getEmail(email)),
+  getEmailProps: (email) => dispatch(getEmail(email)),
 });
 
 export default connect(null, mapDispatchToProps)(Login);
+
+Login.propTypes = {
+  getEmailProps: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
