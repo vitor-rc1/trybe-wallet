@@ -9,7 +9,7 @@ class Login extends React.Component {
       emailIsValid: false,
       passwordIsValid: false,
       email: '',
-    }
+    };
     this.emailValidation = this.emailValidation.bind(this);
     this.passwordValidation = this.passwordValidation.bind(this);
     this.changeState = this.changeState.bind(this);
@@ -26,15 +26,16 @@ class Login extends React.Component {
   emailValidation(value) {
     // regex que utilizei graças a colaboração do Amigo Pedro MF - Turma 7
     const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.com$/;
-    this.changeState(regexEmail.test(value), 'emailIsValid')
+    this.changeState(regexEmail.test(value), 'emailIsValid');
   }
 
   passwordValidation(value) {
-    this.changeState(value.length > 5, 'passwordIsValid')
+    const minLength = 5;
+    this.changeState(value.length > minLength, 'passwordIsValid');
   }
 
   render() {
-    const { emailIsValid,  passwordIsValid, email } = this.state;
+    const { emailIsValid, passwordIsValid, email } = this.state;
     const { getEmail, history } = this.props;
 
     return (
@@ -45,10 +46,10 @@ class Login extends React.Component {
           id="email-input"
           data-testid="email-input"
           value={ email }
-          onChange={({ target: { value } }) => {
-            this.setState({ email: value })
-            this.emailValidation(value)
-          }}
+          onChange={ ({ target: { value } }) => {
+            this.setState({ email: value });
+            this.emailValidation(value);
+          } }
         />
 
         <label htmlFor="password-input">Senha</label>
@@ -56,19 +57,19 @@ class Login extends React.Component {
           type="text"
           id="password-input"
           data-testid="password-input"
-          onChange={({ target: {value} }) => this.passwordValidation(value)}
+          onChange={ ({ target: { value } }) => this.passwordValidation(value) }
         />
 
-        <button 
-          disabled={ !passwordIsValid || !emailIsValid } 
+        <button
+          disabled={ !passwordIsValid || !emailIsValid }
           type="button"
-          onClick={() => {
-            getEmail( email );
+          onClick={ () => {
+            getEmail(email);
             history.push('carteira');
-          }}
+          } }
         >
           Entrar
-          </button>
+        </button>
 
       </div>
     );
@@ -76,7 +77,7 @@ class Login extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  getEmail: (email) => dispatch(getEmail(email))
+  getEmail: (email) => dispatch(getEmail(email)),
 });
 
 export default connect(null, mapDispatchToProps)(Login);
