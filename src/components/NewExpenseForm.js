@@ -1,61 +1,86 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { response } from '../tests/mockData';
+import { fetchCurrencys } from '../actions';
 
 class NewExpenseForm extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
-      id: 0,
+      id: props.idStore,
       value: 0,
       description: '',
       currency: 'USD',
       method: 'Dinheiro',
       tag: 'Alimentação',
-      exchangeRates: {},
+      codes: [],
     };
     this.updateState = this.updateState.bind(this);
     this.loadCurrencys = this.loadCurrencys.bind(this);
-    this.currencysOptions = this.currencysOptions.bind(this);
-  }
-
-  updateState(name, value) {
-    this.setState({ [name]: value });
-  }
-
-   currencysOptions() {
-    const { exchangeRates } = this.state;
-    const codes = Object.keys(exchangeRates);
-    return codes.map((code) => {
-      return (
-        <option
-          value={code}
-          key={code}
-          data-testid={code}
-        >
-          { code }
-        </option>
-      );
-    });
-  }
-
-  async loadCurrencys() {
-    let exchangeRates = await fetch('https://economia.awesomeapi.com.br/json/all')
-    .then(response => response.json());
-    delete exchangeRates.USDT; //delete retirado da w3schools 
-    //https://www.w3schools.com/howto/howto_js_remove_property_object.asp
-    this.setState({ exchangeRates });
+    this.insertExpense = this.insertExpense.bind(this);
+    this.updateiD = this.updateiD.bind(this);
   }
 
   componentDidMount() {
     this.loadCurrencys();
   }
 
-  insertExpense(event) {
+  componentDidUpdate() {
+    this.updateiD();
+  }
+
+  updateiD() {
+    const { id } = this.state;
+    const { idStore } = this.props;
+    if (id !== idStore) {
+      this.setState({
+        id: idStore,
+      });
+    }
+  }
+
+  async loadCurrencys() {
+    const exchangeRates = await fetch('https://economia.awesomeapi.com.br/json/all')
+      .then((response) => response.json());
+    delete exchangeRates.USDT; // delete retirado da w3schools
+    // https://www.w3schools.com/howto/howto_js_remove_property_object.asp
+    const codes = Object.keys(exchangeRates);
+    this.setState({ codes });
+  }
+
+  updateState(name, value) {
+    this.setState({ [name]: value });
+  }
+
+  currencysOptions() {
+    const { codes } = this.state;
+    return codes.map((code) => (
+      <option
+        value={ code }
+        key={ code }
+        data-testid={ code }
+      >
+        { code}
+      </option>
+    ));
+  }
+
+  async insertExpense(event) {
     event.preventDefault();
 
-    //terminar função
+    const expense = { ...this.state };
+    const { addExpenseProp } = this.props;
+    delete expense.codes;
+    addExpenseProp(expense);
+
+    this.setState({
+      value: 0,
+      description: '',
+      currency: 'USD',
+      method: 'Dinheiro',
+      tag: 'Alimentação',
+      exchangeRates: {},
+    });
   }
 
   render() {
@@ -68,9 +93,11 @@ class NewExpenseForm extends React.Component {
             type="text"
             id="value-input"
             data-testid="value-input"
-            value={value}
+            value={ value }
             name="value"
-            onChange={({ target: { name, value } }) => { this.updateState(name, value) }}
+            onChange={ ({ target }) => {
+              this.updateState(target.name, target.value);
+            } }
           />
         </label>
 
@@ -80,9 +107,11 @@ class NewExpenseForm extends React.Component {
             type="text"
             id="description-input"
             data-testid="description-input"
-            value={description}
+            value={ description }
             name="description"
-            onChange={({ target: { name, value } }) => { this.updateState(name, value) }}
+            onChange={ ({ target }) => {
+              this.updateState(target.name, target.value);
+            } }
           />
         </label>
 
@@ -92,9 +121,11 @@ class NewExpenseForm extends React.Component {
             type="text"
             id="currency-input"
             data-testid="currency-input"
-            value={currency}
+            value={ currency }
             name="currency"
-            onChange={({ target: { name, value } }) => { this.updateState(name, value) }}
+            onChange={ ({ target }) => {
+              this.updateState(target.name, target.value);
+            } }
           >
             {this.currencysOptions()}
           </select>
@@ -106,9 +137,11 @@ class NewExpenseForm extends React.Component {
             type="text"
             id="method-input"
             data-testid="method-input"
-            value={method}
+            value={ method }
             name="method"
-            onChange={({ target: { name, value } }) => { this.updateState(name, value) }}
+            onChange={ ({ target }) => {
+              this.updateState(target.name, target.value);
+            } }
           >
             <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão de crédito">Cartão de crédito</option>
@@ -122,9 +155,11 @@ class NewExpenseForm extends React.Component {
             type="text"
             id="tag-input"
             data-testid="tag-input"
-            value={tag}
+            value={ tag }
             name="tag"
-            onChange={({ target: { name, value } }) => { this.updateState(name, value) }}
+            onChange={ ({ target }) => {
+              this.updateState(target.name, target.value);
+            } }
           >
             <option value="Alimentação">Alimentação</option>
             <option value="Lazer">Lazer</option>
@@ -141,7 +176,16 @@ class NewExpenseForm extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  addExpense: (expense) => dispatch()
-})
+  addExpenseProp: (expense) => dispatch(fetchCurrencys(expense)),
+});
 
-export default connect(null, mapDispatchToProps)(NewExpenseForm);
+const mapStateToProps = (state) => ({
+  idStore: state.wallet.expenses.length,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewExpenseForm);
+
+NewExpenseForm.propTypes = {
+  idStore: PropTypes.number.isRequired,
+  addExpenseProp: PropTypes.func.isRequired,
+};

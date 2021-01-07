@@ -11,6 +11,22 @@ class Header extends React.Component {
     };
   }
 
+  componentDidUpdate() {
+    this.updateTotal();
+  }
+
+  updateTotal() {
+    const { total } = this.state;
+    const { expenses } = this.props;
+    const totalConverted = expenses.reduce((acc, crr) => {
+      const { value, currency, exchangeRates } = crr;
+      return acc + value * exchangeRates[currency].ask;
+    }, 0);
+    if (total !== totalConverted) {
+      this.setState({ total: totalConverted });
+    }
+  }
+
   render() {
     const { userEmail } = this.props;
     const { total, currency } = this.state;
@@ -26,10 +42,12 @@ class Header extends React.Component {
 
 const mapStateToProps = (state) => ({
   userEmail: state.user.email,
+  expenses: state.wallet.expenses,
 });
 
 export default connect(mapStateToProps)(Header);
 
 Header.propTypes = {
   userEmail: PropTypes.string.isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
