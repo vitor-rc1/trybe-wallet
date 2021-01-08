@@ -11,14 +11,14 @@ class Table extends React.Component {
     const { deleteItem } = this.props;
     return (
       <tr key={ id }>
-        <th role="cell">{description}</th>
-        <th role="cell">{tag}</th>
-        <th role="cell">{method}</th>
-        <th role="cell">{value}</th>
-        <th role="cell">{name}</th>
-        <th role="cell">{Math.round(ask * 100) / 100}</th>
-        <th role="cell">{Math.round(ask * value * 100) / 100}</th>
-        <th role="cell">Real</th>
+        <th><span role="cell">{description}</span></th>
+        <th><span role="cell">{tag}</span></th>
+        <th><span role="cell">{method}</span></th>
+        <th><span role="cell">{value}</span></th>
+        <th><span role="cell">{name}</span></th>
+        <th><span role="cell">{Math.round(ask * 100) / 100}</span></th>
+        <th><span role="cell">{Math.round(ask * value * 100) / 100}</span></th>
+        <th><span role="cell">Real</span></th>
         <th>
           <button type="button">Editar</button>
           <button
