@@ -1,5 +1,5 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
-import { ADD_EXPENSE } from '../actions';
+import { ADD_EXPENSE, DELETE_EXPENSE } from '../actions';
 
 const initialState = {
   currencies: [],
@@ -9,9 +9,12 @@ const initialState = {
 const wallet = (state = initialState, action) => {
   switch (action.type) {
   case ADD_EXPENSE:
-    // const { expenses } = state;
-    // const expensesArray = expenses.concat(action.payload);
     return { ...state, expenses: [...state.expenses, action.payload] };
+  case DELETE_EXPENSE:
+    return {
+      ...state,
+      expenses: state.expenses.filter((expense) => action.payload !== expense.id),
+    };
   default:
     return state;
   }
