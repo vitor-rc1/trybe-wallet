@@ -1,24 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchCurrencys } from '../actions';
+import { fetchCurrencys, editExpense } from '../actions';
 
 class NewExpenseForm extends React.Component {
   constructor(props) {
     super();
+
+    // const { value, description, currency, method, tag } = props.editExpense
+
     this.state = {
-      id: props.idStore,
+      id: 0,
       value: 0,
       description: '',
       currency: 'USD',
       method: 'Dinheiro',
       tag: 'Alimentação',
+      exchangeRates: {},
       codes: [],
     };
     this.updateState = this.updateState.bind(this);
     this.loadCurrencys = this.loadCurrencys.bind(this);
     this.insertExpense = this.insertExpense.bind(this);
-    this.updateiD = this.updateiD.bind(this);
+    this.editExpense = this.editExpense.bind(this);
+    this.loadExpenseToState = this.loadExpenseToState.bind(this);
   }
 
   componentDidMount() {
@@ -26,16 +31,15 @@ class NewExpenseForm extends React.Component {
   }
 
   componentDidUpdate() {
-    this.updateiD();
+    this.loadExpenseToState()
   }
 
-  updateiD() {
-    const { id } = this.state;
-    const { idStore } = this.props;
-    if (id !== idStore) {
-      this.setState({
-        id: idStore,
-      });
+  loadExpenseToState() {
+    const { editExpense } = this.props
+    console.log(editExpense)
+    if(Object.keys(editExpense).length) {
+      // this.setState({ ...editExpense })
+      console.log('c')
     }
   }
 
@@ -60,7 +64,7 @@ class NewExpenseForm extends React.Component {
         key={ code }
         data-testid={ code }
       >
-        { code}
+        { code }
       </option>
     ));
   }
@@ -81,6 +85,13 @@ class NewExpenseForm extends React.Component {
       tag: 'Alimentação',
       exchangeRates: {},
     });
+  }
+
+  editExpense(){
+    const { editExpense } = this.props;
+    this.setState({
+
+    })
   }
 
   render() {
@@ -180,12 +191,17 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const mapStateToProps = (state) => ({
-  idStore: state.wallet.expenses.length,
+  id: state.wallet.nextId,
+  editExpense: state.wallet.editExpense,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewExpenseForm);
 
 NewExpenseForm.propTypes = {
-  idStore: PropTypes.number.isRequired,
+  id: PropTypes.number,
   addExpenseProp: PropTypes.func.isRequired,
+};
+
+NewExpenseForm.defaultProps = {
+  id: 0,
 };

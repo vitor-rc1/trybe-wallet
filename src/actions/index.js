@@ -26,3 +26,17 @@ export const fetchCurrencys = (infos) => async (dispatch) => {
   delete exchangeRates.USDT;
   dispatch(addExpense({ ...infos, exchangeRates }));
 };
+
+export const EDIT_EXPENSE = 'EDIT_EXPENSE';
+
+export const editExpense = (expenseEdited) => ({
+  type: EDIT_EXPENSE,
+  payload: expenseEdited,
+});
+
+export const LOAD_EXPENSE = 'LOAD_EXPENSE';
+
+export const loadExpense = (id) => ({
+  type: LOAD_EXPENSE,
+  payload: id,
+});

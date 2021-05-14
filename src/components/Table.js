@@ -2,25 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'react-redux';
-import { deleteExpense } from '../actions';
+import { deleteExpense, loadExpense } from '../actions';
 
 class Table extends React.Component {
   itemTable(item) {
     const { value, currency, exchangeRates, method, id, tag, description } = item;
     const { name, ask } = exchangeRates[currency];
-    const { deleteItem } = this.props;
+    const { deleteItem, loadExpenseProp } = this.props;
     return (
       <tr key={ id }>
-        <th><span role="cell">{description}</span></th>
-        <th><span role="cell">{tag}</span></th>
-        <th><span role="cell">{method}</span></th>
-        <th><span role="cell">{value}</span></th>
-        <th><span role="cell">{name}</span></th>
-        <th><span role="cell">{Math.round(ask * 100) / 100}</span></th>
-        <th><span role="cell">{Math.round(ask * value * 100) / 100}</span></th>
-        <th><span role="cell">Real</span></th>
-        <th>
-          <button type="button">Editar</button>
+        <td role="cell">{description}</td>
+        <td role="cell">{tag}</td>
+        <td role="cell">{method}</td>
+        <td role="cell">{value}</td>
+        <td role="cell">{name}</td>
+        <td role="cell">{Math.round(ask * 100) / 100}</td>
+        <td role="cell">{Math.round(ask * value * 100) / 100}</td>
+        <td role="cell">Real</td>
+        <td>
           <button
             type="button"
             data-testid="delete-btn"
@@ -28,7 +27,14 @@ class Table extends React.Component {
           >
             Excluir
           </button>
-        </th>
+          <button
+            type="button"
+            data-testid="edit-btn"
+            onClick={() => loadExpenseProp(id)}
+          >
+            Editar
+            </button>
+        </td>
       </tr>
     );
   }
@@ -60,10 +66,12 @@ class Table extends React.Component {
 
 const mapStateToProps = (state) => ({
   expenses: state.wallet.expenses,
+  loadedExpense: state.wallet.editExpense
 });
 
 const mapDispatchToProps = (dispatch) => ({
   deleteItem: (id) => dispatch(deleteExpense(id)),
+  loadExpenseProp: (id) => dispatch(loadExpense(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Table);
@@ -71,4 +79,5 @@ export default connect(mapStateToProps, mapDispatchToProps)(Table);
 Table.propTypes = {
   expenses: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteItem: PropTypes.func.isRequired,
+  loadExpense: PropTypes.func.isRequired,
 };
